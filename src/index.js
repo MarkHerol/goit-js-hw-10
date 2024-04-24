@@ -17,17 +17,17 @@ const onError = (error) => {
 // Function to fetch breeds and populate select options
 const fetchAndPopulateBreeds = () => {
   fetchBreeds()
-   .then((data) => {
+    .then((data) => {
       loaderEl.classList.replace("loader", "is-hidden");
 
       const optionsMarkup = data.map(({ name, id }) => {
-        return `<option value=${id}>${name}</option>`;
+        return `<option value="${id}">${name}</option>`;
       });
 
       breedSelectEl.insertAdjacentHTML("beforeend", optionsMarkup);
       breedSelectEl.classList.remove("is-hidden");
     })
-   .catch(onError);
+    .catch(onError);
 };
 
 // Initial call to fetch and populate breeds
@@ -44,13 +44,26 @@ breedSelectEl.addEventListener("change", (e) => {
 
   const breedId = e.target.value;
 
+  // Check if breedId is valid
+  if (!breedId) {
+    loaderEl.classList.replace("loader", "is-hidden");
+    catInfoEl.classList.add("is-hidden");
+    catInfoEl.textContent = "";
+    return;
+  }
+
   // Fetch cat by breed and update cat info
   fetchCatByBreed(breedId)
-   .then((cat) => {
+    .then((cat) => {
       loaderEl.classList.replace("loader", "is-hidden");
       catInfoEl.classList.remove("is-hidden");
       // Update cat info element with fetched cat data
       catInfoEl.textContent = `Cat Name: ${cat.name}, Breed: ${cat.breed}`;
     })
-   .catch(onError);
+    .catch((error) => {
+      loaderEl.classList.replace("loader", "is-hidden");
+      catInfoEl.classList.add("is-hidden");
+      catInfoEl.textContent = "";
+      onError(error);
+    });
 });
