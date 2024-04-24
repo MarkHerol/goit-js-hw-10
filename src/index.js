@@ -10,8 +10,7 @@ errorEl.classList.add("is-hidden");
 
 //CREATE THE OPTIONS
 function chooseBreed() {
-	fetchBreeds()
-		.then((data) => {
+	fetchBreeds().then((data) => {
 			loaderEl.classList.replace("loader", "is-hidden");
 
 			let optionsMarkup = data.map(({ name, id }) => {
