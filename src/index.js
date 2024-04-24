@@ -16,7 +16,7 @@ function chooseBreed() {
 			let optionsMarkup = data.map(({ name, id }) => {
 				return `<option value=${id}>${name}</option>`;
 				//<option value={catId} >Cat Name</option>
-			});
+			}); 
 			breedSelectEl.insertAdjacentHTML("beforeend", optionsMarkup);
 			breedSelectEl.classList.remove("is-hidden");
 		})
@@ -31,7 +31,7 @@ breedSelectEl.addEventListener("change", (e) => {
 	loaderEl.classList.replace("is-hidden", "loader");
 
 	//hide select element and cat info while loading.
-
+	breedSelectEl.classList.add("is-hidden");
 	catInfoEl.classList.add("is-hidden");
 
 	let breedId = e.target.value;
@@ -49,6 +49,7 @@ breedSelectEl.addEventListener("change", (e) => {
             </div>
         `;
 			catInfoEl.classList.remove("is-hidden");
+			breedSelectEl.classList.remove("is-hidden");
 			loaderEl.classList.add("is-hidden");
 		})
 		.catch(onError);
