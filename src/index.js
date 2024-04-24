@@ -1,4 +1,3 @@
-
 import { fetchBreeds, fetchCatByBreed } from "./cat-api";
 
 const breedSelectEl = document.querySelector(".breed-select");
@@ -8,57 +7,50 @@ const errorEl = document.querySelector(".error");
 
 errorEl.classList.add("is-hidden");
 
-//CREATE THE OPTIONS
-function chooseBreed() {
-	fetchBreeds().then((data) => {
-			loaderEl.classList.replace("loader", "is-hidden");
+// Function to handle errors
+const onError = (error) => {
+  loaderEl.classList.replace("loader", "is-hidden");
+  errorEl.classList.remove("is-hidden");
+  errorEl.textContent = "An error occurred while fetching data.";
+};
 
-			let optionsMarkup = data.map(({ name, id }) => {
-				return `<option value=${id}>${name}</option>`;
-				//<option value={catId} >Cat Name</option>
-			}); 
-			breedSelectEl.insertAdjacentHTML("beforeend", optionsMarkup);
-			breedSelectEl.classList.remove("is-hidden");
-		})
-		.catch(onError);
-}
+// Function to fetch breeds and populate select options
+const fetchAndPopulateBreeds = () => {
+  fetchBreeds()
+   .then((data) => {
+      loaderEl.classList.replace("loader", "is-hidden");
 
-chooseBreed();
+      const optionsMarkup = data.map(({ name, id }) => {
+        return `<option value=${id}>${name}</option>`;
+      });
 
+      breedSelectEl.insertAdjacentHTML("beforeend", optionsMarkup);
+      breedSelectEl.classList.remove("is-hidden");
+    })
+   .catch(onError);
+};
+
+// Initial call to fetch and populate breeds
+fetchAndPopulateBreeds();
+
+// Event listener for breed select element
 breedSelectEl.addEventListener("change", (e) => {
-	//show loader while loading.
+  // Show loader while loading
+  loaderEl.classList.replace("is-hidden", "loader");
 
-	loaderEl.classList.replace("is-hidden", "loader");
+  // Hide select element and cat info while loading
+  breedSelectEl.classList.add("is-hidden");
+  catInfoEl.classList.add("is-hidden");
 
-	//hide select element and cat info while loading.
-	breedSelectEl.classList.add("is-hidden");
-	catInfoEl.classList.add("is-hidden");
+  const breedId = e.target.value;
 
-	let breedId = e.target.value;
-	fetchCatByBreed(breedId)
-		.then((data) => {
-			const { url, breeds } = data[0];
-			const { name, description, temperament } = breeds[0];
-
-			catInfoEl.innerHTML = `
-            <img src='${url}' alt='{name}' width="400"/>
-            <div class='box'>
-                <h2>${name}</h2>
-                <p>${description}</p>
-                <p>${temperament}</p>
-            </div>
-        `;
-			catInfoEl.classList.remove("is-hidden");
-			breedSelectEl.classList.remove("is-hidden");
-			loaderEl.classList.add("is-hidden");
-		})
-		.catch(onError);
+  // Fetch cat by breed and update cat info
+  fetchCatByBreed(breedId)
+   .then((cat) => {
+      loaderEl.classList.replace("loader", "is-hidden");
+      catInfoEl.classList.remove("is-hidden");
+      // Update cat info element with fetched cat data
+      catInfoEl.textContent = `Cat Name: ${cat.name}, Breed: ${cat.breed}`;
+    })
+   .catch(onError);
 });
-
-function onError() {
-	//Show error message
-	errorEl.classList.remove("is-hidden");
-
-	//hide select element
-	breedSelectEl.classList.add("is-hidden");
-}
